@@ -19,9 +19,9 @@ public class DeptDAO {
 		ResultSet rs = stmt.executeQuery();
 		while (rs.next()) {
 			Dept d = new Dept();
-			d.deptNo = rs.getInt("deptNo");
-			d.deptName = rs.getString("deptName");
-			d.loc = rs.getString("loc");
+			d.setDeptNo(rs.getInt("deptNo")); 
+			d.setDeptName(rs.getString("deptName"));
+			d.setLoc(rs.getString("loc"));
 			list.add(d);
 		}
 		return list;

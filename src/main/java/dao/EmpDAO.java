@@ -9,7 +9,7 @@ import java.util.HashMap;
 import vo.Emp;
 
 public class EmpDAO {
-	
+
 	// 조인으로 Map 사용
 	public static ArrayList<HashMap<String , Object>> selectEmpAndDeptList() throws Exception {
 		ArrayList<HashMap<String , Object>> list = new ArrayList<>();
@@ -42,9 +42,9 @@ public class EmpDAO {
 		ResultSet rs = stmt.executeQuery();
 		while (rs.next()) {
 			Emp e = new Emp();
-			e.empNo = rs.getInt("empNo");
-			e.empName = rs.getString("empName");
-			e.sal = rs.getDouble("sal");
+			e.setEmpNo(rs.getInt("empNo"));
+			e.setEmpName(rs.getString("empName"));
+			e.setSal(rs.getDouble("sal"));
 			list.add(e);
 		}
 		return list;
