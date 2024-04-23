@@ -9,6 +9,40 @@ import java.util.HashMap;
 import vo.Emp;
 
 public class EmpDAO {
+	// exWhereIn.jsp
+	public static ArrayList<Emp> selectEmpListByGrade(ArrayList<Integer> ckList) throws Exception{
+		ArrayList<Emp> list = new ArrayList<>();
+		int ckListLength = ckList.size();
+		
+		Connection conn = DBHelper.getConnection();
+		
+		/*
+		 	where grade in (1, ... ) 
+		 */
+		String sql = "SELECT ename, grade"
+				+ " FROM emp"
+				+ " WHERE grade IN(?";
+		for(int i = 1; i < ckListLength; i++) {
+			sql = sql + ",?";
+		}
+		sql = sql + ") ORDER BY grade ASC";
+		
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		for(int i = 0; i < ckListLength; i++) {
+			stmt.setInt(i+1, ckList.get(i));
+		}
+		
+		ResultSet rs = stmt.executeQuery();
+		while (rs.next()) {
+			Emp e = new Emp();
+			e.setEmpName(rs.getString("ename"));
+			e.setGrade(rs.getInt("grade"));
+			list.add(e);
+		}
+		conn.close();
+		return list;
+		
+	}
 	
 	// CASE 구문 연습 메서드
 	public static ArrayList<HashMap<String , String>> selectJobCaseList() throws Exception{
