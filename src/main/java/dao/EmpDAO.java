@@ -9,7 +9,47 @@ import java.util.HashMap;
 import vo.Emp;
 
 public class EmpDAO {
+	// exOrderBy.jsp
+	// 정렬 기준에따라 emp 출력하는 메서드
+	public static ArrayList<Emp> selectEmpListSort(String colName, String sort) throws Exception{
+		System.out.println("EmpDAO.selectEmpListSort - colName = " + colName);
+		System.out.println("EmpDAO.selectEmpListSort - sort = " + sort);
+		
+		ArrayList<Emp> list = new ArrayList<>();
+		
+		Connection conn = DBHelper.getConnection();
+		
+		String sql = "SELECT empno, ename"
+				+ " FROM emp";
+		
+		// colName, sort가 null이 아닐경우에는 ORDER BY절 사용
+		if(colName != null && sort != null) {
+			sql = sql + " ORDER BY " + colName + " " + sort;
+		}
+		
+		PreparedStatement stmt = conn.prepareStatement(sql);		
+		ResultSet rs = stmt.executeQuery();
+		while (rs.next()) {
+			Emp e = new Emp();
+			e.setEmpNo(rs.getInt("empno"));
+			e.setEmpName(rs.getString("ename"));
+			list.add(e);
+		}
+		
+		/*
+		 	동적 쿼리(쿼리 문자열이 매개값에 따라 달라지는 경우)
+		 	empno ASC
+		 	empno DESC
+		 	
+		 	ename ASC
+		 	eanme DESC
+		 */
+		conn.close();
+		return list;
+	}
+	
 	// exWhereIn.jsp
+	// grade에 따라 emp 출력하는 메서드
 	public static ArrayList<Emp> selectEmpListByGrade(ArrayList<Integer> ckList) throws Exception{
 		ArrayList<Emp> list = new ArrayList<>();
 		int ckListLength = ckList.size();
