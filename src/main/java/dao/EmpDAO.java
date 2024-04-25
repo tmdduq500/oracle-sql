@@ -9,6 +9,65 @@ import java.util.HashMap;
 import vo.Emp;
 
 public class EmpDAO {
+	// exJoin.jsp
+	// emp와 해당 emp의 mgrName, mgrGrade SELECT 하는 메서드
+	public static ArrayList<HashMap<String, Object>> selectEmpAndMgrList() throws Exception {
+		ArrayList<HashMap<String, Object>> list = new ArrayList<>();
+		
+		Connection conn = DBHelper.getConnection();
+		
+		// emp테이블 SELF JOIN하고 emp의 no,name,grade와 mgr의 name(null일경우 '관리자없음'),grade(null일 경우 0)출력 
+		String sql = "SELECT e1.empno, e1.ename, e1.grade, NVL(e2.ename, '관리자없음') mgrName, NVL(e2.grade, 0) mgrGrade"
+				+ " FROM emp e1 LEFT OUTER JOIN emp e2"
+				+ " ON e1.mgr = e2.empno"
+				+ " ORDER BY e1.empno ASC";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();
+		
+		while (rs.next()) {
+			HashMap<String, Object> m = new HashMap<>();
+			m.put("empNo", rs.getInt("empno"));
+			m.put("empName", rs.getString("ename"));
+			m.put("empGrade", rs.getInt("grade"));
+			m.put("mgrName", rs.getString("mgrName"));
+			m.put("mgrGrade", rs.getInt("mgrGrade"));
+			list.add(m);
+		}
+		
+		conn.close();
+		return list;
+	}
+	
+	// exGroupBy.jsp
+	// 등급별로 sal를 집계함수별로 계산한 메서드
+	public static ArrayList<HashMap<String, Integer>> selectEmpSalStats() throws Exception {
+		ArrayList<HashMap<String, Integer>> list = new ArrayList<>();
+		
+		Connection conn = DBHelper.getConnection();
+		// emp 테이블에서 grade별로 각각의 집계함수를 사용해 연산된 값 SELECT
+		String sql = "SELECT grade, COUNT(*) count, SUM(sal) sum, AVG(sal) avg, MAX(sal) max, MIN(sal) min"
+				+ " FROM emp"
+				+ " GROUP BY grade"
+				+ " ORDER BY grade ASC";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();
+		
+		while (rs.next()) {
+			HashMap<String, Integer> m = new HashMap<>();
+			m.put("grade", rs.getInt("grade"));
+			m.put("count", rs.getInt("count"));
+			m.put("sum", rs.getInt("sum"));
+			m.put("avg", rs.getInt("avg"));
+			m.put("max", rs.getInt("max"));
+			m.put("min", rs.getInt("min"));
+			list.add(m);
+		}
+		
+		
+		conn.close();
+		return list;
+	}
+	
 	// exOrderBy.jsp
 	// 정렬 기준에따라 emp 출력하는 메서드
 	public static ArrayList<Emp> selectEmpListSort(String colName, String sort) throws Exception{
